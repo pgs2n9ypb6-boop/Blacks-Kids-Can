@@ -1,0 +1,212 @@
+[
+  {
+    "id": "nile-valley",
+    "name": "The Nile Valley",
+    "world": 1,
+    "order": 1,
+    "topic": "Ancient Egypt & Nubia",
+    "story": "You arrive at the banks of a great river. Boats drift by carrying grain and stone. A young scribe waves and says: 'Welcome! This river is the heart of two great lands - Egypt and Kush.'",
+    "figureIds": ["nefertiti", "piye", "amenirdis"],
+    "minigame": "match"
+  },
+  {
+    "id": "ghana-empire",
+    "name": "The Ghana Empire",
+    "world": 1,
+    "order": 2,
+    "topic": "Ghana Empire",
+    "story": "Camel caravans loaded with gold and salt cross the sand. A trader smiles: 'This land grew rich because we knew how to trade fairly and wisely.'",
+    "figureIds": ["griot-tradition"],
+    "minigame": "map"
+  },
+  {
+    "id": "mali-empire",
+    "name": "The Mali Empire",
+    "world": 1,
+    "order": 3,
+    "topic": "Mali Empire",
+    "story": "In a bustling city, a scholar carries a stack of books. 'Come to our libraries,' she says. 'Our king believes learning is as valuable as gold.'",
+    "figureIds": ["sundiata-keita", "mansa-musa"],
+    "minigame": "memory"
+  },
+  {
+    "id": "songhai-empire",
+    "name": "The Songhai Empire",
+    "world": 1,
+    "order": 4,
+    "topic": "Songhai Empire",
+    "story": "In Timbuktu, students gather around a teacher beneath a shaded courtyard. 'People travel from far away just to study here,' he explains proudly.",
+    "figureIds": ["askia-the-great"],
+    "minigame": "match"
+  },
+  {
+    "id": "great-zimbabwe",
+    "name": "Great Zimbabwe",
+    "world": 1,
+    "order": 5,
+    "topic": "Great Zimbabwe & Hausa Kingdoms",
+    "story": "Towering stone walls rise without a single drop of mortar. A builder grins: 'Every stone fits perfectly. Come see what our hands can build.'",
+    "figureIds": ["great-zimbabwe-builders", "queen-amina", "queen-nzinga"],
+    "minigame": "memory"
+  },
+  {
+    "id": "crossing-the-ocean",
+    "name": "A Hard Journey",
+    "world": 2,
+    "order": 1,
+    "topic": "The Atlantic World",
+    "story": "The path grows quiet here. A wise elder sits beside you and speaks gently: 'This next part of our story is hard. Long ago, many African people were taken from their homes and families and carried far across the ocean against their will. It was deeply unfair. But even in the hardest times, people held onto their songs, their strength, their love for each other, and their hope.'",
+    "figureIds": ["olaudah-equiano"],
+    "minigame": "memory"
+  },
+  {
+    "id": "new-communities",
+    "name": "Building New Communities",
+    "world": 2,
+    "order": 2,
+    "topic": "Family & Culture",
+    "story": "In a small gathering under starlight, someone hums an old melody while others clap along. 'Even far from home,' she says, 'we build family, we tell our stories, and we keep our culture alive.'",
+    "figureIds": ["phillis-wheatley"],
+    "minigame": "match"
+  },
+  {
+    "id": "voices-of-resistance",
+    "name": "Voices That Would Not Be Silenced",
+    "world": 2,
+    "order": 3,
+    "topic": "Resistance & Freedom",
+    "story": "A woman with a determined look shows you a hidden trail through the woods. 'Some of us,' she says, 'risked everything so that others could be free. Freedom was worth every risk.'",
+    "figureIds": ["harriet-tubman"],
+    "minigame": "match"
+  },
+  {
+    "id": "freedmens-schools",
+    "name": "Freedmen's Schools",
+    "world": 3,
+    "order": 1,
+    "topic": "Reconstruction & Education",
+    "story": "A one-room schoolhouse buzzes with excitement. Children of all ages share books and slates. A teacher smiles: 'After so long being told we couldn't learn, now we are building our own schools - and no one can take that from us.'",
+    "figureIds": ["mary-mcleod-bethune"],
+    "minigame": "match"
+  },
+  {
+    "id": "black-wall-street",
+    "name": "Black Wall Street",
+    "world": 3,
+    "order": 2,
+    "topic": "Greenwood, Tulsa",
+    "story": "Shops, theaters, and hotels line a bustling street, all owned and run by Black families. 'We call it Greenwood,' a shopkeeper says proudly. 'We built this together.' Later, you learn that this thriving neighborhood faced a terrible injustice - an attack that destroyed much of what had been built. But the people of Greenwood were determined, and they worked hard to rebuild their community.",
+    "figureIds": ["ow-gurley"],
+    "minigame": "memory"
+  },
+  {
+    "id": "inventors-of-everyday-life",
+    "name": "Inventors of Everyday Life",
+    "world": 3,
+    "order": 3,
+    "topic": "Invention & Innovation",
+    "story": "Gears whir and sparks fly in a busy workshop. An inventor grins and holds up a sketch: 'Some of the things you use every single day - I bet you didn't know a Black inventor helped create them!'",
+    "figureIds": ["garrett-morgan", "lewis-latimer"],
+    "minigame": "match"
+  },
+  {
+    "id": "voices-for-freedom",
+    "name": "Voices for Freedom",
+    "world": 4,
+    "order": 1,
+    "topic": "Abolition",
+    "story": "You meet two powerful speakers preparing for a big gathering. 'Words can be as strong as any weapon,' one says. 'We speak the truth about how wrong slavery is, until the whole country has to listen.'",
+    "figureIds": ["frederick-douglass", "sojourner-truth"],
+    "minigame": "match"
+  },
+  {
+    "id": "standing-together",
+    "name": "Standing Together",
+    "world": 4,
+    "order": 2,
+    "topic": "Civil Rights Movement",
+    "story": "A city bus sits quiet at a stop while a crowd of neighbors organizes nearby. 'One person refusing to give up her seat mattered,' someone explains. 'But it took thousands of us walking, planning, and standing together to truly make change.'",
+    "figureIds": ["rosa-parks", "ella-baker"],
+    "minigame": "memory"
+  },
+  {
+    "id": "marching-for-change",
+    "name": "Marching for Change",
+    "world": 4,
+    "order": 3,
+    "topic": "Civil Rights Movement",
+    "story": "A huge crowd gathers, signs held high, voices rising together in song and speech. 'So many people gave everything for this march,' a marcher tells you. 'It was never just one person - it was all of us, together.'",
+    "figureIds": ["martin-luther-king-jr", "fannie-lou-hamer"],
+    "minigame": "match"
+  },
+  {
+    "id": "youth-who-changed-history",
+    "name": "Youth Who Changed History",
+    "world": 4,
+    "order": 4,
+    "topic": "Young Changemakers",
+    "story": "A child not much older than you walks confidently up a school's front steps while a crowd watches. 'I was scared,' she admits, 'but I knew going to school mattered. Even kids can help change history.'",
+    "figureIds": ["ruby-bridges", "john-lewis"],
+    "minigame": "memory"
+  },
+  {
+    "id": "science-and-medicine",
+    "name": "Science & Medicine",
+    "world": 5,
+    "order": 1,
+    "topic": "Science & Medicine",
+    "story": "A greenhouse overflows with experiments while a nearby clinic bustles with patients. 'Curiosity can heal the world,' a researcher tells you, 'whether you're growing new crops or saving lives.'",
+    "figureIds": ["george-washington-carver", "charles-drew"],
+    "minigame": "match"
+  },
+  {
+    "id": "innovators-and-scientists",
+    "name": "Innovators & Scientists",
+    "world": 5,
+    "order": 2,
+    "topic": "Technology & Chemistry",
+    "story": "Wires and beakers crowd a cluttered workbench. 'Every invention starts with a question,' an inventor says, sketching furiously. 'Ours have kept trains running safely and made medicines that help millions.'",
+    "figureIds": ["granville-woods", "percy-julian"],
+    "minigame": "memory"
+  },
+  {
+    "id": "reaching-for-the-stars",
+    "name": "Reaching for the Stars",
+    "world": 5,
+    "order": 3,
+    "topic": "Space Exploration",
+    "story": "A rocket rises against a starry sky. 'Space belongs to everyone brave enough to reach for it,' an astronaut says, grinning up at the stars.",
+    "figureIds": ["mae-jemison", "guion-bluford"],
+    "minigame": "match"
+  },
+  {
+    "id": "art-and-rhythm",
+    "name": "Art & Rhythm",
+    "world": 5,
+    "order": 4,
+    "topic": "Art & Music",
+    "story": "A trumpet's bright notes drift from an open window, while nearby a painter fills a canvas with bold color and movement. 'Art tells our story,' they say, 'in every brushstroke and every note.'",
+    "figureIds": ["jacob-lawrence", "louis-armstrong"],
+    "minigame": "memory"
+  },
+  {
+    "id": "champions",
+    "name": "Champions",
+    "world": 5,
+    "order": 5,
+    "topic": "Sports",
+    "story": "A stadium roars as an athlete crosses the finish line. 'Every record we broke,' she says, catching her breath, 'proved what was possible for the next runner, and the one after that.'",
+    "figureIds": ["jesse-owens", "jackie-robinson"],
+    "minigame": "match"
+  },
+  {
+    "id": "your-future",
+    "name": "Your Future",
+    "world": 6,
+    "order": 1,
+    "topic": "Your Future",
+    "story": "You reach the end of the map - but really, it's a beginning. A guide smiles at you: 'You've met scientists, artists, leaders, and dreamers. Your history isn't finished. You are part of what comes next. So... what will you become?'",
+    "figureIds": [],
+    "minigame": "career-explorer"
+  }
+]

@@ -1,0 +1,453 @@
+/* Screen layouts */
+
+.screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--space-3);
+}
+
+/* ---- Home ---- */
+.home-screen {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 100vh;
+  background: radial-gradient(circle at 50% 20%, #3a2a6e 0%, var(--color-indigo) 65%);
+  color: white;
+}
+
+.home-brand {
+  font-size: var(--type-hero);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  margin-bottom: var(--space-1);
+  line-height: 1.05;
+}
+
+.home-tagline {
+  font-size: 1.2rem;
+  max-width: 480px;
+  color: #E9E2F7;
+  margin-bottom: var(--space-4);
+}
+
+.home-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.home-parent-link {
+  color: #C9BEEA;
+  background: none;
+  border: none;
+  font-size: 0.95rem;
+  text-decoration: underline;
+  font-family: var(--font-body);
+}
+
+/* ---- Top bar (shown on in-game screens) ---- */
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) 0;
+  gap: var(--space-2);
+}
+
+.top-bar .xp-pill {
+  background: var(--color-gold);
+  color: var(--color-ink);
+  border-radius: 999px;
+  padding: 6px 16px;
+  font-weight: 700;
+  font-family: var(--font-display);
+}
+
+.top-bar .back-btn {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  color: var(--color-indigo);
+}
+
+/* ---- Character Creator ---- */
+.creator-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+@media (max-width: 640px) {
+  .creator-grid { grid-template-columns: 1fr; }
+}
+
+.avatar-preview {
+  background: var(--color-cream-dim);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 260px;
+  font-size: 6rem;
+}
+
+.option-group {
+  margin-bottom: var(--space-3);
+}
+
+.option-group h3 {
+  font-size: 1rem;
+  margin-bottom: var(--space-1);
+  color: var(--color-indigo);
+}
+
+.swatch-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.swatch {
+  border-radius: var(--radius-sm);
+  border: 3px solid transparent;
+  padding: 10px 14px;
+  background: white;
+  font-size: 1.6rem;
+  min-width: 56px;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.swatch.selected {
+  border-color: var(--color-sunset);
+  background: #FDEBDD;
+}
+
+.skin-swatch {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  min-width: unset;
+  min-height: unset;
+  padding: 0;
+}
+
+/* ---- World Map ---- */
+.map-screen {
+  background: linear-gradient(180deg, var(--color-indigo) 0%, #2A2060 100%);
+  color: white;
+  min-height: 100vh;
+}
+
+.map-title {
+  font-size: var(--type-h1);
+  margin-bottom: var(--space-1);
+}
+
+.map-path {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.map-node {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: rgba(255,255,255,0.07);
+  border-radius: var(--radius-md);
+  padding: var(--space-2);
+  border: none;
+  color: white;
+  text-align: left;
+  width: 100%;
+}
+
+.map-node.unlocked {
+  background: rgba(242,183,5,0.15);
+  border: 2px solid var(--color-gold);
+}
+
+.map-node.locked {
+  opacity: 0.5;
+}
+
+.map-node-icon {
+  font-size: 2rem;
+  min-width: 48px;
+  text-align: center;
+}
+
+.map-node-title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+}
+
+.map-node-sub {
+  font-size: 0.85rem;
+  color: #CFC6EE;
+}
+
+/* ---- Location screen ---- */
+.location-story {
+  background: var(--color-cream-dim);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+  font-size: 1.1rem;
+  margin-bottom: var(--space-3);
+}
+
+.figure-card-list {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.figure-card {
+  background: white;
+  border-radius: var(--radius-md);
+  padding: var(--space-2);
+  border-left: 6px solid var(--color-sunset);
+}
+
+.figure-card h3 { margin-bottom: 4px; }
+.figure-card .topic-tag {
+  display: inline-block;
+  background: var(--color-cream-dim);
+  color: var(--color-indigo);
+  font-size: 0.8rem;
+  padding: 2px 10px;
+  border-radius: 999px;
+  margin-bottom: 6px;
+}
+
+/* ---- Minigames ---- */
+.minigame-header {
+  text-align: center;
+  margin-bottom: var(--space-3);
+}
+
+.match-row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.match-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.match-item {
+  background: white;
+  border: 3px solid var(--color-cream-dim);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2);
+  text-align: center;
+  font-weight: 600;
+}
+
+.match-item.selected {
+  border-color: var(--color-sunset);
+  background: #FDEBDD;
+}
+
+.match-item.correct {
+  border-color: var(--color-forest);
+  background: #E1F5ED;
+}
+
+.match-item.wrong {
+  border-color: #C0392B;
+  background: #FBE4E1;
+}
+
+.memory-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+}
+
+.memory-card {
+  aspect-ratio: 1;
+  background: var(--color-indigo);
+  color: white;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  text-align: center;
+  padding: 8px;
+  border: none;
+}
+
+.memory-card.flipped {
+  background: var(--color-gold);
+  color: var(--color-ink);
+}
+
+.memory-card.matched {
+  background: var(--color-forest);
+  color: white;
+  opacity: 0.6;
+}
+
+.map-tap-region {
+  background: rgba(255,255,255,0.08);
+  border: 2px dashed rgba(255,255,255,0.4);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  color: white;
+  text-align: center;
+  margin-bottom: var(--space-1);
+}
+
+/* ---- Daily Challenge ---- */
+.daily-card {
+  background: var(--color-cream-dim);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  text-align: center;
+}
+
+.streak-badge {
+  display: inline-block;
+  background: var(--color-gold);
+  border-radius: 999px;
+  padding: 4px 14px;
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+}
+
+.choice-btn {
+  display: block;
+  width: 100%;
+  background: white;
+  border: 2px solid var(--color-cream-dim);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2);
+  margin-bottom: var(--space-1);
+  font-size: 1rem;
+  text-align: left;
+  font-family: var(--font-body);
+}
+
+.choice-btn.correct { border-color: var(--color-forest); background: #E1F5ED; }
+.choice-btn.wrong { border-color: #C0392B; background: #FBE4E1; }
+
+/* ---- Parent Dashboard ---- */
+.parent-screen { background: var(--color-cream); }
+
+.pin-pad {
+  max-width: 280px;
+  margin: var(--space-4) auto;
+  text-align: center;
+}
+
+.pin-input {
+  font-size: 2rem;
+  letter-spacing: 0.5em;
+  text-align: center;
+  width: 100%;
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--color-cream-dim);
+  margin-bottom: var(--space-2);
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-2);
+  margin: var(--space-3) 0;
+}
+
+.stat-card {
+  background: var(--color-cream-dim);
+  border-radius: var(--radius-md);
+  padding: var(--space-2);
+  text-align: center;
+}
+
+.stat-card .stat-num {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  color: var(--color-sunset);
+}
+
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: var(--space-1);
+}
+
+.badge-chip {
+  background: white;
+  border-radius: var(--radius-sm);
+  padding: var(--space-1);
+  text-align: center;
+  font-size: 1.8rem;
+}
+
+.badge-chip .badge-name {
+  font-size: 0.7rem;
+  color: var(--color-ink);
+  margin-top: 4px;
+}
+
+/* ---- Career Explorer (World 6) ---- */
+.career-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.career-card {
+  background: white;
+  border: 3px solid var(--color-cream-dim);
+  border-radius: var(--radius-md);
+  padding: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-height: 90px;
+}
+
+.career-card.active {
+  border-color: var(--color-sunset);
+}
+
+.career-card.viewed {
+  background: #FDEBDD;
+}
+
+.career-icon {
+  font-size: 2rem;
+}
+
+.career-title {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.career-detail-card {
+  background: var(--color-cream-dim);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+  text-align: center;
+}
