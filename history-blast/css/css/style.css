@@ -1,0 +1,262 @@
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #000;
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: none;
+  font-family: 'Poppins', system-ui, sans-serif;
+  color: white;
+  /* dynamic viewport height - accounts for mobile browser chrome */
+  height: 100dvh;
+  width: 100vw;
+}
+
+#game-container {
+  position: relative;
+  width: 100vw;
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+#game-canvas {
+  touch-action: none;
+  display: block;
+}
+
+/* ---- HUD ---- */
+#hud {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 8px);
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.hud-row {
+  display: flex;
+  gap: 24px;
+  background: rgba(15, 11, 46, 0.75);
+  border-radius: 14px;
+  padding: 6px 18px;
+  backdrop-filter: blur(4px);
+}
+
+.hud-block { text-align: center; min-width: 50px; }
+.hud-label { font-size: 0.6rem; letter-spacing: 0.05em; opacity: 0.7; }
+.hud-value { font-size: 1.2rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.hud-value.combo { color: #F2B705; }
+
+/* ---- Touch zones ---- */
+#controls {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  pointer-events: none;
+}
+
+.touch-zone {
+  position: absolute;
+  bottom: 0;
+  height: 42%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 14px);
+  pointer-events: auto;
+}
+
+#flipper-left-zone { left: 0; width: 42%; }
+#flipper-right-zone { right: 0; width: 40%; }
+#plunger-zone { right: 0; width: 18%; height: 100%; align-items: flex-end; }
+
+.zone-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: rgba(255,255,255,0.35);
+  user-select: none;
+}
+
+.touch-zone:active .zone-label,
+.touch-zone.pressed .zone-label {
+  color: rgba(242,183,5,0.9);
+}
+
+/* ---- Fact card ---- */
+#fact-card {
+  position: absolute;
+  top: 18%;
+  left: 50%;
+  transform: translate(-50%, -12px);
+  z-index: 15;
+  opacity: 0;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+}
+
+#fact-card.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.fact-card-inner {
+  background: rgba(15, 11, 46, 0.92);
+  border: 2px solid #F2B705;
+  border-radius: 16px;
+  padding: 12px 18px;
+  text-align: center;
+  max-width: 78vw;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+.fact-emoji { font-size: 1.8rem; }
+.fact-name { font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 1rem; margin-top: 2px; }
+.fact-text { font-size: 0.75rem; opacity: 0.85; margin-top: 4px; line-height: 1.3; }
+.fact-xp { font-size: 0.8rem; color: #F2B705; font-weight: 700; margin-top: 6px; }
+
+/* ---- Start / Game Over overlay screens ---- */
+.overlay-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: radial-gradient(circle at 50% 30%, #2a2060 0%, #0F0B2E 70%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  text-align: center;
+  padding: 24px;
+}
+
+.title-block h1 {
+  font-family: 'Baloo 2', sans-serif;
+  font-size: clamp(2rem, 10vw, 3rem);
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.tagline {
+  letter-spacing: 0.1em;
+  font-size: 0.85rem;
+  color: #C9BEEA;
+  margin: 4px 0 0;
+}
+
+.btn-play {
+  background: #E8622C;
+  color: white;
+  border: none;
+  border-radius: 999px;
+  padding: 16px 48px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  font-family: 'Baloo 2', sans-serif;
+  box-shadow: 0 4px 0 #B9481A;
+}
+
+.btn-play:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #B9481A;
+}
+
+.hint {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.5);
+}
+
+.btn-secondary {
+  background: rgba(255,255,255,0.08);
+  color: white;
+  border: 1.5px solid rgba(255,255,255,0.3);
+  border-radius: 999px;
+  padding: 10px 24px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+}
+
+.hud-icon-btn {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 8px);
+  right: calc(env(safe-area-inset-right) + 10px);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(15, 11, 46, 0.75);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.25);
+  font-size: 1.1rem;
+  line-height: 1;
+  pointer-events: auto;
+  z-index: 11;
+}
+
+.result-block {
+  background: rgba(255,255,255,0.05);
+  border-radius: 16px;
+  padding: 18px 32px;
+}
+
+.result-label { font-size: 0.7rem; letter-spacing: 0.05em; opacity: 0.7; margin-top: 10px; }
+.result-label:first-child { margin-top: 0; }
+.result-value { font-family: 'Baloo 2', sans-serif; font-size: 2.2rem; font-weight: 700; color: #F2B705; }
+.result-value.small { font-size: 1.4rem; color: white; }
+
+.hidden { display: none !important; }
+
+/* ---- Add to Home Screen banner ---- */
+.install-banner {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: calc(env(safe-area-inset-bottom) + 12px);
+  z-index: 30;
+  background: rgba(15, 11, 46, 0.96);
+  border: 1.5px solid rgba(242,183,5,0.4);
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+.install-text {
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.install-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn-secondary.small {
+  padding: 8px 16px;
+  font-size: 0.8rem;
+}
+
+.btn-text {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.55);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 8px 6px;
+}

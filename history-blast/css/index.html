@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>HISTORY BLAST</title>
+
+<!-- PWA / Add to Home Screen -->
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#0F0B2E" />
+<link rel="icon" href="icons/favicon.png" />
+
+<!-- iOS-specific: these are what actually give the standalone, no-Safari-chrome
+     launch feel when a person adds this to their iPhone home screen. The
+     Fullscreen API doesn't work on iOS Safari, but this does. -->
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="History Blast" />
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+
+<link rel="stylesheet" href="css/style.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+</head>
+<body>
+<div id="game-container">
+  <canvas id="game-canvas"></canvas>
+
+  <!-- HUD -->
+  <div id="hud" class="hidden">
+    <div class="hud-row">
+      <div class="hud-block">
+        <div class="hud-label">SCORE</div>
+        <div class="hud-value" id="score-display">0</div>
+      </div>
+      <div class="hud-block" id="combo-block">
+        <div class="hud-value combo" id="combo-display"></div>
+      </div>
+      <div class="hud-block">
+        <div class="hud-label">BALL</div>
+        <div class="hud-value" id="balls-display">3</div>
+      </div>
+    </div>
+  </div>
+  <button id="fullscreen-btn" class="hud-icon-btn hidden" aria-label="Toggle fullscreen">⛶</button>
+
+  <!-- Fact card (shown on target hit, auto-dismisses, never blocks gameplay) -->
+  <div id="fact-card" class="hidden"></div>
+
+  <!-- Touch controls -->
+  <div id="controls" class="hidden">
+    <div id="flipper-left-zone" class="touch-zone">
+      <span class="zone-label">&larr; FLIP</span>
+    </div>
+    <div id="plunger-zone" class="touch-zone plunger">
+      <span class="zone-label">HOLD</span>
+    </div>
+    <div id="flipper-right-zone" class="touch-zone">
+      <span class="zone-label">FLIP &rarr;</span>
+    </div>
+  </div>
+
+  <!-- Start screen -->
+  <div id="start-screen" class="overlay-screen">
+    <div class="title-block">
+      <h1>HISTORY BLAST</h1>
+      <p class="tagline">PLAY. DISCOVER. REMEMBER.</p>
+    </div>
+    <button id="play-now-btn" class="btn-play">PLAY NOW</button>
+    <button id="fullscreen-start-btn" class="btn-secondary hidden">⛶ FULLSCREEN</button>
+    <p class="hint">Tap left/right to flip &middot; hold HOLD to launch</p>
+  </div>
+
+  <!-- Game over screen -->
+  <div id="game-over-screen" class="overlay-screen hidden">
+    <h2>GAME OVER</h2>
+    <div class="result-block">
+      <div class="result-label">FINAL SCORE</div>
+      <div class="result-value" id="final-score">0</div>
+      <div class="result-label">DISCOVERIES</div>
+      <div class="result-value small" id="final-discoveries">0</div>
+    </div>
+    <button id="play-again-btn" class="btn-play">PLAY AGAIN</button>
+  </div>
+
+  <!-- "Add to Home Screen" prompt - shown once, non-blocking, remembers dismissal -->
+  <div id="install-banner" class="install-banner hidden">
+    <div class="install-text" id="install-text"></div>
+    <div class="install-actions">
+      <button id="install-yes-btn" class="btn-secondary small hidden">ADD TO HOME SCREEN</button>
+      <button id="install-dismiss-btn" class="btn-text">NOT NOW</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/content.js"></script>
+<script src="js/game.js"></script>
+<script>
+  HistoryBlast.init();
+  document.getElementById('play-now-btn').addEventListener('click', () => HistoryBlast.startGame());
+  document.getElementById('play-again-btn').addEventListener('click', () => HistoryBlast.startGame());
+  document.getElementById('fullscreen-start-btn').addEventListener('click', () => HistoryBlast.toggleFullscreen());
+  document.getElementById('fullscreen-btn').addEventListener('click', () => HistoryBlast.toggleFullscreen());
+
+  // ---- Offline shell (service worker) ----
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => {
+        // Offline shell just won't be available - core game still works online.
+      });
+    });
+  }
+
+  // ---- Add to Home Screen prompt ----
+  // Shown once, only if not already installed/standalone, and only if the
+  // person hasn't dismissed it before. iOS has no programmatic install API,
+  // so it gets friendly manual instructions instead of a button.
+  (function setupInstallPrompt() {
+    const DISMISS_KEY = 'hb_install_dismissed';
+    const banner = document.getElementById('install-banner');
+    const textEl = document.getElementById('install-text');
+    const yesBtn = document.getElementById('install-yes-btn');
+    const dismissBtn = document.getElementById('install-dismiss-btn');
+
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+      || window.navigator.standalone === true;
+    if (isStandalone) return; // already installed, never show this
+
+    let dismissed = false;
+    try { dismissed = localStorage.getItem(DISMISS_KEY) === '1'; } catch (e) {}
+    if (dismissed) return;
+
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+    let deferredPrompt = null;
+
+    function showBanner() {
+      banner.classList.remove('hidden');
+    }
+
+    function dismiss() {
+      banner.classList.add('hidden');
+      try { localStorage.setItem(DISMISS_KEY, '1'); } catch (e) {}
+    }
+    dismissBtn.addEventListener('click', dismiss);
+
+    if (isIOS) {
+      // No native prompt exists on iOS Safari - just tell them the two taps.
+      textEl.textContent = 'Want HISTORY BLAST on your home screen? Tap the Share icon, then "Add to Home Screen."';
+      yesBtn.classList.add('hidden');
+      // Show after a short delay so it doesn't fight for attention with the title screen.
+      setTimeout(showBanner, 4000);
+    } else {
+      // Android/Chrome: wait for the real install prompt event before showing anything.
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        textEl.textContent = 'Want HISTORY BLAST on your home screen?';
+        yesBtn.classList.remove('hidden');
+        setTimeout(showBanner, 4000);
+      });
+      yesBtn.addEventListener('click', async () => {
+        banner.classList.add('hidden');
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          await deferredPrompt.userChoice;
+          deferredPrompt = null;
+        }
+        try { localStorage.setItem(DISMISS_KEY, '1'); } catch (e) {}
+      });
+    }
+  })();
+</script>
+</body>
+</html>
