@@ -48,11 +48,17 @@ const DailyChallengeScreen = (() => {
     } else if (challenge.type === 'multiplechoice') {
       options = challenge.options.map(o => ({ label: o, value: o }));
     } else {
-      // matching-type challenges fall back to a simplified true/false prompt for the daily slot
-      options = [{ label: 'Got it!', value: true }];
+      // Unknown/unsupported challenge type for this screen - don't fake a
+      // single always-correct option. Skip to a fresh challenge instead.
+      const fallback = ContentEngine.getRandomChallenge([challenge.id], player.ageLevel || '5-8');
+      if (fallback && fallback.id !== challenge.id) {
+        renderChallenge(card, fallback, player);
+      }
+      return;
     }
 
     card.innerHTML = `
+      <div style="font-size:2.5rem;margin-bottom:8px;">${challenge.icon || '🌍'}</div>
       <h2 style="margin-bottom:var(--space-2);">${challenge.question}</h2>
       <div id="options"></div>
       <p id="explain" style="margin-top:var(--space-2);min-height:1.5em;"></p>
@@ -65,7 +71,7 @@ const DailyChallengeScreen = (() => {
       btn.textContent = opt.label;
       btn.addEventListener('click', () => {
         if (btn.dataset.answered) return;
-        const isCorrect = challenge.type === 'matching' ? true : opt.value === challenge.answer;
+        const isCorrect = opt.value === challenge.answer;
         card.querySelectorAll('.choice-btn').forEach(b => b.dataset.answered = 'true');
         btn.classList.add(isCorrect ? 'correct' : 'wrong');
         const explainEl = card.querySelector('#explain');
@@ -74,14 +80,17 @@ const DailyChallengeScreen = (() => {
         if (isCorrect) {
           ProgressEngine.awardXP(player, ProgressEngine.XP_PER_CORRECT);
         }
-        const result = ProgressEngine.recordDailyChallenge(player);
+        ProgressEngine.recordDailyChallenge(player);
 
-        const doneBtn = document.createElement('button');
-        doneBtn.className = 'btn-primary btn-large-tap';
-        doneBtn.textContent = 'Back to Map';
-        doneBtn.style.marginTop = 'var(--space-3)';
-        doneBtn.addEventListener('click', () => ScreenManager.go('world-map'));
-        card.appendChild(doneBtn);
+        if (!card.querySelector('#daily-done-btn')) {
+          const doneBtn = document.createElement('button');
+          doneBtn.id = 'daily-done-btn';
+          doneBtn.className = 'btn-primary btn-large-tap';
+          doneBtn.textContent = 'Back to Map';
+          doneBtn.style.marginTop = 'var(--space-3)';
+          doneBtn.addEventListener('click', () => ScreenManager.go('world-map'));
+          card.appendChild(doneBtn);
+        }
       });
       optionsEl.appendChild(btn);
     });
