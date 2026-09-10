@@ -148,6 +148,16 @@ const HistoryBlast = (() => {
     parts.push(Bodies.rectangle(-WALL / 2, TABLE_H / 2, WALL, TABLE_H, { isStatic: true })); // left
     parts.push(Bodies.rectangle(TABLE_W + WALL / 2, TABLE_H / 2, WALL, TABLE_H, { isStatic: true })); // right
 
+    // Plunger lane floor - WITHOUT this, the ball has nothing to rest on
+    // and falls straight through the bottom of the lane under gravity
+    // before the player ever gets a chance to launch it. (This was the
+    // actual bug behind "holding the plunger does nothing" - the ball was
+    // already gone by the time the player touched the screen.)
+    parts.push(Bodies.rectangle(
+      LANE_X + (TABLE_W - LANE_X) / 2, TABLE_H + WALL / 2, TABLE_W - LANE_X, WALL,
+      { isStatic: true }
+    ));
+
     // Plunger lane divider wall, with a gap near the top so a launched ball
     // can roll out of the lane into the main play area.
     const laneWallTopH = plungerLaneGapY.top;
@@ -173,38 +183,45 @@ const HistoryBlast = (() => {
   }
 
   function buildFlippers() {
-    const flipLen = 78;
+    const flipLen = 70;
     const flipThick = 16;
 
-    // Left flipper: pivot near bottom-left of the main gap
-    const leftPivot = { x: 118, y: 686 };
+    // Left flipper: pivot positioned well clear of center, so its swept tip
+    // never crosses the right flipper's tip (verified numerically - see
+    // dev notes). Rest = drooped down-and-out (wide open drain gap when
+    // idle); active = swings up-and-in toward center.
+    const leftPivot = { x: 95, y: 686 };
     const leftBody = Bodies.rectangle(leftPivot.x + flipLen / 2, leftPivot.y, flipLen, flipThick, {
       chamfer: { radius: flipThick / 2 }, density: 0.02, friction: 0.4, restitution: 0.2
     });
-    Body.setAngle(leftBody, 0.55);
+    Body.setAngle(leftBody, 0.85);
     const leftConstraint = Constraint.create({
       pointA: leftPivot, bodyB: leftBody, pointB: { x: -flipLen / 2, y: 0 },
       stiffness: 1, length: 0
     });
     flippers.left = {
       body: leftBody, constraint: leftConstraint,
-      restAngle: 0.55, activeAngle: -0.55,
+      restAngle: 0.85, activeAngle: -0.25,
       flipSpeed: 0.5, returnSpeed: 0.18
     };
 
-    // Right flipper: mirrored
-    const rightPivot = { x: LANE_X - 118, y: 686 };
+    // Right flipper: TRUE mirror of the left. The correct mirror angle is
+    // simply the negation of the left's angle (verified numerically) - an
+    // earlier version of this used a `Math.PI +/- angle` convention which
+    // was mathematically wrong and caused the two flippers' tips to cross
+    // into an overlapping X shape instead of leaving a gap between them.
+    const rightPivot = { x: LANE_X - 95, y: 686 };
     const rightBody = Bodies.rectangle(rightPivot.x - flipLen / 2, rightPivot.y, flipLen, flipThick, {
       chamfer: { radius: flipThick / 2 }, density: 0.02, friction: 0.4, restitution: 0.2
     });
-    Body.setAngle(rightBody, Math.PI - 0.55);
+    Body.setAngle(rightBody, -0.85);
     const rightConstraint = Constraint.create({
       pointA: rightPivot, bodyB: rightBody, pointB: { x: flipLen / 2, y: 0 },
       stiffness: 1, length: 0
     });
     flippers.right = {
       body: rightBody, constraint: rightConstraint,
-      restAngle: Math.PI - 0.55, activeAngle: Math.PI + 0.55,
+      restAngle: -0.85, activeAngle: 0.25,
       flipSpeed: 0.5, returnSpeed: 0.18
     };
 
@@ -212,9 +229,13 @@ const HistoryBlast = (() => {
   }
 
   function buildBumpers() {
+    // Spread across the FULL table height (top, middle-left/right, and
+    // lower-center), like a real pinball table, instead of clustering
+    // together in one tight band - verified pairwise spacing numerically
+    // before committing to these positions.
     const positions = [
-      { x: 90, y: 220 }, { x: 260, y: 180 }, { x: 175, y: 480 },
-      { x: 80, y: 420 }, { x: 260, y: 420 }
+      { x: 85, y: 160 }, { x: 265, y: 140 }, { x: 85, y: 460 },
+      { x: 265, y: 460 }, { x: 175, y: 560 }
     ];
     bumpers = positions.map((pos, i) => {
       const target = HISTORY_TARGETS[i % HISTORY_TARGETS.length];
@@ -228,7 +249,10 @@ const HistoryBlast = (() => {
   }
 
   function buildDrainSensor() {
-    drainSensor = Bodies.rectangle(LANE_X / 2, 780, LANE_X - 40, 20, {
+    // Spans the FULL main play area width (not just the center) so there's
+    // no narrow uncovered strip near the side walls where a ball could also
+    // fall through without triggering ball-lost detection.
+    drainSensor = Bodies.rectangle(LANE_X / 2, 780, LANE_X, 20, {
       isStatic: true, isSensor: true, label: 'drain'
     });
     World.add(world, drainSensor);
@@ -288,10 +312,10 @@ const HistoryBlast = (() => {
     const plungerZone = document.getElementById('plunger-zone');
 
     const bind = (el, onDown, onUp) => {
-      el.addEventListener('pointerdown', (e) => { e.preventDefault(); onDown(e); }, { passive: false });
-      el.addEventListener('pointerup', onUp);
-      el.addEventListener('pointercancel', onUp);
-      el.addEventListener('pointerleave', onUp);
+      el.addEventListener('pointerdown', (e) => { e.preventDefault(); el.classList.add('pressed'); onDown(e); }, { passive: false });
+      el.addEventListener('pointerup', (e) => { el.classList.remove('pressed'); onUp(e); });
+      el.addEventListener('pointercancel', (e) => { el.classList.remove('pressed'); onUp(e); });
+      el.addEventListener('pointerleave', (e) => { el.classList.remove('pressed'); onUp(e); });
     };
 
     bind(leftZone, () => { leftPressed = true; }, () => { leftPressed = false; });
@@ -482,6 +506,7 @@ const HistoryBlast = (() => {
   // ---------- Visual table art (drawn to match the physics geometry) ----------
 
   let stars = [];
+  let glowBlooms = [];
   function initStarfield() {
     stars = [];
     for (let i = 0; i < 70; i++) {
@@ -492,12 +517,20 @@ const HistoryBlast = (() => {
         a: Math.random() * 0.5 + 0.15
       });
     }
+    glowBlooms = [
+      { x: 60, y: 90, r: 70, a: 0.12 },
+      { x: 300, y: 500, r: 60, a: 0.10 },
+      { x: 250, y: 620, r: 50, a: 0.08 }
+    ];
   }
 
   function drawBackground() {
-    const bgGrad = ctx.createRadialGradient(TABLE_W / 2, TABLE_H * 0.3, 40, TABLE_W / 2, TABLE_H * 0.6, TABLE_H);
-    bgGrad.addColorStop(0, '#241a4d');
-    bgGrad.addColorStop(1, '#08061c');
+    // Warmer violet/purple palette, closer to Space Cadet's saturated
+    // blue-violet table color instead of the flatter navy/indigo before.
+    const bgGrad = ctx.createRadialGradient(TABLE_W / 2, TABLE_H * 0.32, 30, TABLE_W / 2, TABLE_H * 0.55, TABLE_H * 0.95);
+    bgGrad.addColorStop(0, '#3d2f7a');
+    bgGrad.addColorStop(0.55, '#251a52');
+    bgGrad.addColorStop(1, '#0d0824');
     ctx.fillStyle = bgGrad;
     ctx.fillRect(0, 0, TABLE_W, TABLE_H);
 
@@ -505,6 +538,18 @@ const HistoryBlast = (() => {
       ctx.beginPath();
       ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(255,255,255,${s.a})`;
+      ctx.fill();
+    });
+
+    // A few soft magenta/pink glow blooms scattered around, echoing the
+    // pink starburst highlights visible on the reference table.
+    glowBlooms.forEach(g => {
+      const rad = ctx.createRadialGradient(g.x, g.y, 0, g.x, g.y, g.r);
+      rad.addColorStop(0, `rgba(255,120,180,${g.a})`);
+      rad.addColorStop(1, 'rgba(255,120,180,0)');
+      ctx.fillStyle = rad;
+      ctx.beginPath();
+      ctx.arc(g.x, g.y, g.r, 0, Math.PI * 2);
       ctx.fill();
     });
 
@@ -551,19 +596,55 @@ const HistoryBlast = (() => {
     ctx.closePath();
     ctx.fill();
 
-    // Funnel guides above the flippers (matches buildTable's triangle bodies)
+    // Kicker slingshots above the flippers - drawn as bold yellow triangles,
+    // matching the reference table's signature look (previously these were
+    // subtle chrome-outlined guides, easy to miss).
     ctx.beginPath();
     ctx.moveTo(70, 700); ctx.lineTo(160, 700); ctx.lineTo(70, 790);
     ctx.closePath();
+    const kickerGradL = ctx.createLinearGradient(70, 700, 160, 790);
+    kickerGradL.addColorStop(0, '#fff3c4');
+    kickerGradL.addColorStop(1, '#e0a600');
+    ctx.fillStyle = kickerGradL;
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.beginPath();
     ctx.moveTo(LANE_X - 70, 700); ctx.lineTo(LANE_X - 70, 790); ctx.lineTo(LANE_X - 160, 700);
     ctx.closePath();
-    ctx.fillStyle = 'rgba(180,186,205,0.14)';
+    const kickerGradR = ctx.createLinearGradient(LANE_X - 160, 700, LANE_X - 70, 790);
+    kickerGradR.addColorStop(0, '#e0a600');
+    kickerGradR.addColorStop(1, '#fff3c4');
+    ctx.fillStyle = kickerGradR;
     ctx.fill();
-    ctx.strokeStyle = chromeStroke(TABLE_W);
-    ctx.lineWidth = 4;
+    ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+    ctx.lineWidth = 2;
     ctx.stroke();
 
     ctx.restore();
+  }
+
+  function drawDecorativeArrows() {
+    // Small yellow directional arrows scattered around, purely cosmetic -
+    // echoes the reference table's little yellow arrow accents.
+    const arrows = [
+      { x: 40, y: 500, angle: 0.3 },
+      { x: 320, y: 250, angle: Math.PI + 0.3 },
+      { x: 30, y: 620, angle: -0.2 }
+    ];
+    arrows.forEach(a => {
+      ctx.save();
+      ctx.translate(a.x, a.y);
+      ctx.rotate(a.angle);
+      ctx.beginPath();
+      ctx.moveTo(-5, -6); ctx.lineTo(6, 0); ctx.lineTo(-5, 6);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(242,183,5,0.65)';
+      ctx.fill();
+      ctx.restore();
+    });
   }
 
   function drawOrbitRing() {
@@ -633,9 +714,34 @@ const HistoryBlast = (() => {
     ctx.fillStyle = body;
     ctx.fill();
 
+    // Gem-cut facet lines, like a cut jewel catching light - gives the
+    // bumpers a sparkle instead of a flat painted-circle look.
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.clip();
+    ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < 6; i++) {
+      const a = (i / 6) * Math.PI * 2;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + Math.cos(a) * r * 1.4, y + Math.sin(a) * r * 1.4);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // Bright sparkle highlight (small white dot, upper-left of center)
+    ctx.beginPath();
+    ctx.arc(x - r * 0.35, y - r * 0.35, r * 0.18, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.fill();
+
     // rim ring
     ctx.lineWidth = 2.5;
     ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
     ctx.stroke();
 
     ctx.font = '19px sans-serif';
@@ -687,6 +793,7 @@ const HistoryBlast = (() => {
     ctx.clearRect(0, 0, TABLE_W, TABLE_H);
     drawBackground();
     drawRails();
+    drawDecorativeArrows();
     drawOrbitRing();
     drawSpinner();
     bumpers.forEach(drawBumper);
