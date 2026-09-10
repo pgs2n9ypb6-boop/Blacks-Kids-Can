@@ -300,8 +300,14 @@ const HistoryBlast = (() => {
 
   function launchBall(power) {
     if (!ball) return;
-    const force = -0.09 - power * 0.11; // negative y = upward
-    Body.setVelocity(ball, { x: 0, y: force * 22 });
+    // Previous velocity range (~ -2 to -4.4) was an order of magnitude too
+    // weak to cover the ~600px trip up the lane against gravity - the ball
+    // would barely leave the plunger before losing momentum. Even a light
+    // tap now gives a real launch; full charge sends it flying.
+    const minVel = -16;
+    const maxVel = -34;
+    const vy = minVel + power * (maxVel - minVel);
+    Body.setVelocity(ball, { x: 0, y: vy });
   }
 
   // ---------- Controls ----------
